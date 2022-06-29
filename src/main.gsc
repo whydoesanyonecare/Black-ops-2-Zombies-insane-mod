@@ -2,7 +2,7 @@
 #include common_scripts\utility;
 #include maps\mp\gametypes\_hud_util;
 #include maps\mp\gametypes\_hud_message;
-#include maps\mp/zombies\_zm_weapons;
+#include maps\mp\zombies\_zm_weapons;
 #include maps\mp\zombies\_zm_utility; 
 #include maps\mp\zombies\_zm_perks;
 init()
@@ -34,7 +34,7 @@ zombie_speed()
 		{
 			if( !IsDefined( zombie.run_set ) )
 			{
-				zombie maps/mp/zombies/_zm_utility::set_zombie_run_cycle( "sprint" ); 
+				zombie maps\mp\zombies\_zm_utility::set_zombie_run_cycle( "sprint" ); 
 				zombie.run_set = 1;
 			}
 		}
@@ -142,7 +142,7 @@ new_pap_trigger()
 	Trigger SetCursorHint( "HINT_NOICON" );
     Trigger sethintstring( &"ZOMBIE_PERK_PACKAPUNCH", 10000 );
 	Trigger usetriggerrequirelookat();
-	perk_machine thread maps/mp/zombies/_zm_perks::activate_packapunch();
+	perk_machine thread maps\mp\zombies\_zm_perks::activate_packapunch();
 	for(;;)
 	{
 		Trigger waittill("trigger", player);
@@ -155,7 +155,7 @@ new_pap_trigger()
 		if(player UseButtonPressed() && player.score >= 10000 && current_weapon != "riotshield_zm" && player can_buy() )
         {
 			player.score -= 10000;
-            player thread maps/mp/zombies/_zm_audio::play_jingle_or_stinger( "mus_perks_packa_sting" );
+            player thread maps\mp\zombies\_zm_audio::play_jingle_or_stinger( "mus_perks_packa_sting" );
 			trigger setinvisibletoall();
 			upgrade_as_attachment = will_upgrade_weapon_as_attachment( current_weapon );
             
@@ -170,13 +170,13 @@ new_pap_trigger()
             player.restore_stock = player getweaponammostock( current_weapon );
             player.restore_max = weaponmaxammo( current_weapon );
             
-			player thread maps/mp/zombies/_zm_perks::do_knuckle_crack();
+			player thread maps\mp\zombies\_zm_perks::do_knuckle_crack();
 			wait .1;
 			player takeWeapon(current_weapon);
-			current_weapon = player maps/mp/zombies/_zm_weapons::switch_from_alt_weapon( current_weapon );
+			current_weapon = player maps\mp\zombies\_zm_weapons::switch_from_alt_weapon( current_weapon );
 			self.current_weapon = current_weapon;
-			upgrade_name = maps/mp/zombies/_zm_weapons::get_upgrade_weapon( current_weapon, upgrade_as_attachment );
-			player maps/mp/zombies/_zm_perks::third_person_weapon_upgrade( current_weapon, upgrade_name, packa_rollers, perk_machine, self );
+			upgrade_name = maps\mp\zombies\_zm_weapons::get_upgrade_weapon( current_weapon, upgrade_as_attachment );
+			player maps\mp\zombies\_zm_perks::third_person_weapon_upgrade( current_weapon, upgrade_name, packa_rollers, perk_machine, self );
 			trigger sethintstring( &"ZOMBIE_GET_UPGRADED" );
 			trigger thread wait_for_pick(player, current_weapon, self.upgrade_name);
 			if ( isDefined( player ) )
@@ -217,7 +217,7 @@ wait_for_pick(player, weapon, upgrade_weapon )
 		{	
 			self stoploopsound( 0.05 );
 			player thread do_player_general_vox( "general", "pap_arm2", 15, 100 );
-			gun = player maps/mp/zombies/_zm_weapons::get_upgrade_weapon( upgrade_weapon, 0 );
+			gun = player maps\mp\zombies\_zm_weapons::get_upgrade_weapon( upgrade_weapon, 0 );
 			if(is_weapon_upgraded( weapon ) )
 			{
 				player.restore_ammo = 1;
@@ -232,20 +232,20 @@ wait_for_pick(player, weapon, upgrade_weapon )
 			}
 			if( weapon == "galil_upgraded_zm+reflex" || weapon  == "fnfal_upgraded_zm+reflex" )
 			{
-				player giveweapon( weapon, 0, player maps/mp/zombies/_zm_weapons::get_pack_a_punch_weapon_options( weapon ));
+				player giveweapon( weapon, 0, player maps\mp\zombies\_zm_weapons::get_pack_a_punch_weapon_options( weapon ));
 				player switchToWeapon( weapon );
 				x = weapon;
 			}
             else
             {
                 weapon_limit = get_player_weapon_limit( player );
-                player maps/mp/zombies/_zm_weapons::take_fallback_weapon();
+                player maps\mp\zombies\_zm_weapons::take_fallback_weapon();
                 primaries = player getweaponslistprimaries();
 
                 if ( isDefined( primaries ) && primaries.size >= weapon_limit )
-                    player maps/mp/zombies/_zm_weapons::weapon_give( upgrade_weapon );
+                    player maps\mp\zombies\_zm_weapons::weapon_give( upgrade_weapon );
                 else
-                    player giveweapon( upgrade_weapon, 0, player maps/mp/zombies/_zm_weapons::get_pack_a_punch_weapon_options( upgrade_weapon ));
+                    player giveweapon( upgrade_weapon, 0, player maps\mp\zombies\_zm_weapons::get_pack_a_punch_weapon_options( upgrade_weapon ));
 
 			    player switchToWeapon( upgrade_weapon );
                 x = upgrade_weapon;
@@ -273,7 +273,7 @@ can_buy()
         return 0;
     if ( self isthrowinggrenade() )
         return 0;
-    if ( self maps/mp/zombies/_zm_laststand::player_is_in_laststand() )
+    if ( self maps\mp\zombies\_zm_laststand::player_is_in_laststand() )
         return 0;
     current_weapon = self getcurrentweapon();
     if ( is_placeable_mine( current_weapon ) || is_equipment_that_blocks_purchase( current_weapon ) || is_equipment( current_weapon ) )
@@ -496,7 +496,7 @@ perk_machine(perk, hint, sound)
             wait 4;
         }
         else if(player UseButtonPressed() && player.score < 10000 && player can_buy() && !player hasperk( perk ))
-            player maps/mp/zombies/_zm_audio::create_and_play_dialog( "general", "perk_deny", undefined, 0 );
+            player maps\mp\zombies\_zm_audio::create_and_play_dialog( "general", "perk_deny", undefined, 0 );
 
         wait .2;
     }
@@ -506,17 +506,17 @@ dogiveperk(perk)
 {
     self endon("disconnect");
     level endon("end_game");
-    if(!self hasperk(perk) || self maps/mp/zombies/_zm_perks::has_perk_paused(perk))
+    if(!self hasperk(perk) || self maps\mp\zombies\_zm_perks::has_perk_paused(perk))
     {
-        gun = self maps/mp/zombies/_zm_perks::perk_give_bottle_begin(perk);
+        gun = self maps\mp\zombies\_zm_perks::perk_give_bottle_begin(perk);
         evt = self waittill_any_return("fake_death", "death", "player_downed", "weapon_change_complete");
 
         if(evt == "weapon_change_complete")
-            self thread maps/mp/zombies/_zm_perks::wait_give_perk(perk, 1);
+            self thread maps\mp\zombies\_zm_perks::wait_give_perk(perk, 1);
 
-        self maps/mp/zombies/_zm_perks::perk_give_bottle_end(gun, perk);
+        self maps\mp\zombies\_zm_perks::perk_give_bottle_end(gun, perk);
 
-        if(self maps/mp/zombies/_zm_laststand::player_is_in_laststand() || isdefined(self.intermission) && self.intermission)
+        if(self maps\mp\zombies\_zm_laststand::player_is_in_laststand() || isdefined(self.intermission) && self.intermission)
             return;
 
         self notify("burp");
@@ -530,7 +530,7 @@ break_barriers()
     for(;;)
     {
         level waittill("start_of_round");
-        level thread maps/mp/zombies/_zm_blockers::open_all_zbarriers();
+        level thread maps\mp\zombies\_zm_blockers::open_all_zbarriers();
     }
 }
 
