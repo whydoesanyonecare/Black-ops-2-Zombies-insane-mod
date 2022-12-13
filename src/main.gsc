@@ -485,8 +485,13 @@ perk_machine(perk, hint, sound)
             self setinvisibletoplayer(player);
         else
             self setvisibletoplayer(player);
-    
-        if(player UseButtonPressed() && player.score >= 10000 && player can_buy() && !player hasperk( perk ) )
+
+        if(!player can_buy())
+        {
+            wait .1;
+            continue;
+        }
+        else if(player UseButtonPressed() && player.score >= 10000 && player can_buy() && !player hasperk( perk ) )
         {
             self sethintstring( " " );
             player.score -= 10000;
@@ -498,7 +503,7 @@ perk_machine(perk, hint, sound)
         else if(player UseButtonPressed() && player.score < 10000 && player can_buy() && !player hasperk( perk ))
             player maps\mp\zombies\_zm_audio::create_and_play_dialog( "general", "perk_deny", undefined, 0 );
 
-        wait .2;
+        wait .1;
     }
 }
 
